@@ -7,7 +7,7 @@ public class Character : MonoBehaviour {
 
     public bool teleport = false;
     public float speed = 0.02f;
-    public float turn = 0.1f;
+    public float turn = 0.5f;
 
     private Vector3 direction;
 
