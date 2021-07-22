@@ -1,5 +1,7 @@
 # Log file
 *.log
+*.csproj
+*.sln
 .DS_Store
 .vsconfig
 .vs
