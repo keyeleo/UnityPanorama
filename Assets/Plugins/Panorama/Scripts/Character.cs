@@ -38,9 +38,6 @@ public class Character : MonoBehaviour {
         {
             direction.y += Input.GetAxis("Mouse X") * turn;
             transform.rotation = Quaternion.Euler(direction);
-
-            Vector3 v= new Vector3(0.134087f, -0.049024f, -3.347272f);
-            moveTo(v);
         }
 
         //move

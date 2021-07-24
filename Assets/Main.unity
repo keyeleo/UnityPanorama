@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 4900000, guid: 2f7d3a0dafeb74a968ecb0640b14490b, type: 3}
+  spotObject: {fileID: 1860471873939750, guid: 82478eaea9ad541889ba0911eff2fdf8, type: 2}
 --- !u!1001 &411338262
 Prefab:
   m_ObjectHideFlags: 0
@@ -357,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teleport: 0
   speed: 0.02
-  turn: 0.5
+  turn: 1
 --- !u!1 &1900725526
 GameObject:
   m_ObjectHideFlags: 0

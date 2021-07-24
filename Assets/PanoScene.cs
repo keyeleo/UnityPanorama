@@ -6,6 +6,7 @@ using UnityEngine;
 public class PanoScene : MonoBehaviour {
 
 	public TextAsset settings;
+	public GameObject spotObject;
 
 	Location[] locations;
 
@@ -30,12 +31,16 @@ public class PanoScene : MonoBehaviour {
 
 			location.spot = new Vector3();
 			jvp = (JObject)jpoint["spot"];
+			//swap y and z
 			location.spot.x = (float)jvp["x"];
 			location.spot.y = (float)jvp["z"];
 			location.spot.z = (float)jvp["y"];
 
 			locations[i] = location;
-			Debug.Log(i + ": " + location.viewpoint);
+			Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z);
+
+			var spot = GameObject.Instantiate(spotObject, location.spot, Quaternion.identity);
+			spot.transform.SetParent(transform);
 		}
 
 
