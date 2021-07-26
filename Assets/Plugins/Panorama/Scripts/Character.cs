@@ -21,7 +21,7 @@ public class Character : MonoBehaviour {
         direction = transform.localEulerAngles;
     }
 
-    public void moveTo(Vector3 target)
+    void moveTo(Vector3 target)
     {
         float time=Vector3.Distance(target, transform.position)/speed*0.1f;
         if (time > 0.001f)
