@@ -113,6 +113,34 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &32332789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 32332790}
+  m_Layer: 0
+  m_Name: spots
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &32332790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 32332789}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 166647073}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &100622241
 Prefab:
   m_ObjectHideFlags: 0
@@ -226,6 +254,7 @@ MonoBehaviour:
   panoObject: {fileID: 1356576602834714, guid: ff4e87e1e12104dbc9c2cd3060b9b3e8, type: 2}
   spotObject: {fileID: 1860471873939750, guid: 82478eaea9ad541889ba0911eff2fdf8, type: 2}
   character: {fileID: 1900725050}
+  spots: {fileID: 32332790}
   settings: {fileID: 4900000, guid: 2f7d3a0dafeb74a968ecb0640b14490b, type: 3}
   cubeTextures:
   - {fileID: 2800000, guid: 8a9056c978053489cab9760a8b88fe93, type: 3}
@@ -386,6 +415,11 @@ MonoBehaviour:
   - {fileID: 2800000, guid: edcac3808a23f4ac391e10f0e02c8557, type: 3}
   panoTextures: []
   speed: 0.02
+--- !u!4 &166647073 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400002, guid: 52499794822b14307843cdfae61ea2f0,
+    type: 3}
+  m_PrefabInternal: {fileID: 100622241}
 --- !u!1 &1900725046
 GameObject:
   m_ObjectHideFlags: 0

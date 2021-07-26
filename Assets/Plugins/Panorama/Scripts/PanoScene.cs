@@ -10,6 +10,7 @@ public class PanoScene : MonoBehaviour {
 	public GameObject panoObject;
 	public GameObject spotObject;
 	public Character character;
+	public Transform spots;
 
 	public TextAsset settings;
 	public Texture[] cubeTextures;
@@ -57,7 +58,7 @@ public class PanoScene : MonoBehaviour {
 
 			//instantiate spots
 			var spot = GameObject.Instantiate(spotObject, location.spot, Quaternion.identity);
-			spot.transform.SetParent(transform);
+			spot.transform.SetParent(spots);
 			spot.GetComponentInChildren<Spot>().locationid = location.locationid;
 		}
 
@@ -69,8 +70,8 @@ public class PanoScene : MonoBehaviour {
 		if (character)
         {
             var pano = GameObject.Instantiate(panoObject, Vector3.zero, Quaternion.identity);
-            //pano.transform.SetParent(character.transform);
-			panorama=pano.GetComponent<Panorama>();
+			pano.transform.SetParent(transform);
+			panorama = pano.GetComponent<Panorama>();
         }
 
 		StartCoroutine(MoveTo(locations[0].locationid, true));
@@ -89,7 +90,6 @@ public class PanoScene : MonoBehaviour {
 					Texture[] textures = new Texture[6];
 					foreach (Texture tex in cubeTextures)
 					{
-						//Debug.Log("textures: " + tex.name);
 						if (tex.name.Contains(location.locationid))
 						{
 							string index = tex.name.Substring(tex.name.LastIndexOf('_') + 1);
@@ -97,23 +97,26 @@ public class PanoScene : MonoBehaviour {
 						}
 					}
 
+					//move camera and panorama
 					if (teleport)
                     {
-						gameObject.transform.localPosition = location.viewpoint;
+						character.gameObject.transform.localPosition = location.viewpoint;
+						character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
 						panorama.gameObject.transform.localPosition = location.viewpoint;
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
 						panorama.SetCubeTextures(textures);
 					}
 					else
                     {
-						iTween.MoveTo(gameObject, location.viewpoint, time);
+						iTween.MoveTo(character.gameObject, location.viewpoint, time);
+						character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
 
-						panorama.SetCubeTextures(textures);
 						iTween.FadeTo(panorama.gameObject, 0.0f, time / 2);
                         yield return new WaitForSeconds(time / 2);
-                        iTween.FadeTo(panorama.gameObject, 1.0f, time / 2);
+						panorama.SetCubeTextures(textures);
+						iTween.FadeTo(panorama.gameObject, 1.0f, time / 2);
                     }
                 }
 

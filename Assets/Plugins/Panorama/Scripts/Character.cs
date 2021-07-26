@@ -3,18 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : MonoBehaviour {
-    public static Character Instance = null;
-
     public bool teleport = false;
     public float speed = 0.02f;
     public float turn = 0.5f;
 
     private Vector3 direction;
-
-    void Awake()
-    {
-        Instance = this;
-    }
 
     private void Start()
     {
