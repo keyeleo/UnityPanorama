@@ -18,7 +18,7 @@ public class Spot : MonoBehaviour {
 
 	void OnTouched()
     {
-		StartCoroutine(PanoScene.Instance.MoveTo(locationid));
-		Debug.Log("Touched "+locationid+": " + transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
+        StartCoroutine(PanoScene.Instance.MoveTo(locationid));
+		//Debug.Log("Touched "+locationid+": " + transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
     }
 }

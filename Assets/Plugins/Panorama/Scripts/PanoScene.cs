@@ -15,7 +15,7 @@ public class PanoScene : MonoBehaviour {
 	public TextAsset settings;
 	public Texture[] cubeTextures;
 	public Texture[] panoTextures;
-	public float speed = 0.02f;
+	public float speed = 0.2f;
 
 	Panorama panorama;
 	Location[] locations;
@@ -110,7 +110,6 @@ public class PanoScene : MonoBehaviour {
 					if (teleport)
                     {
 						character.gameObject.transform.localPosition = location.viewpoint;
-						//character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						panorama.gameObject.transform.localPosition = location.viewpoint;
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						panorama.SetTextures(textures, texture);
@@ -118,16 +117,15 @@ public class PanoScene : MonoBehaviour {
 					else
                     {
 						iTween.MoveTo(character.gameObject, location.viewpoint, time);
-						//character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 
-						iTween.FadeTo(panorama.gameObject, 0.0f, time / 2);
-                        yield return new WaitForSeconds(time / 2);
+						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+						yield return new WaitForSeconds(time / 2);
 						panorama.SetTextures(textures, texture);
-						iTween.FadeTo(panorama.gameObject, 1.0f, time / 2);
-                    }
-                }
+						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 1.0f, "time", time / 2, "easetype", iTween.EaseType.easeOutExpo));
+					}
+				}
 
 				break;
 			}
