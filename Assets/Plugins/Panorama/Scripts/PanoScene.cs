@@ -88,6 +88,7 @@ public class PanoScene : MonoBehaviour {
 				if (time > 0.001f)
 				{
 					Texture[] textures = new Texture[6];
+					Texture texture = null;
 					foreach (Texture tex in cubeTextures)
 					{
 						if (tex.name.Contains(location.locationid))
@@ -96,26 +97,34 @@ public class PanoScene : MonoBehaviour {
 							textures[int.Parse(index)] = tex;
 						}
 					}
+					foreach (Texture tex in panoTextures)
+					{
+						if (tex.name==location.locationid)
+						{
+							texture = tex;
+							break;
+						}
+					}
 
 					//move camera and panorama
 					if (teleport)
                     {
 						character.gameObject.transform.localPosition = location.viewpoint;
-						character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
+						//character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						panorama.gameObject.transform.localPosition = location.viewpoint;
-						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
-						panorama.SetCubeTextures(textures);
+						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
+						panorama.SetTextures(textures, texture);
 					}
 					else
                     {
 						iTween.MoveTo(character.gameObject, location.viewpoint, time);
-						character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
+						//character.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
-						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0); ;
+						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 
 						iTween.FadeTo(panorama.gameObject, 0.0f, time / 2);
                         yield return new WaitForSeconds(time / 2);
-						panorama.SetCubeTextures(textures);
+						panorama.SetTextures(textures, texture);
 						iTween.FadeTo(panorama.gameObject, 1.0f, time / 2);
                     }
                 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Panorama : MonoBehaviour {
 
+	public GameObject cubeObject;
+	public GameObject panoObject;
+
 	public MeshRenderer[] cubeMeshRenderers;
 	public MeshRenderer panoMeshRenderer;
 
@@ -12,13 +15,13 @@ public class Panorama : MonoBehaviour {
 	}
 
 	// cube textures as UFLBRD
-	public void SetCubeTextures(Texture[] textures=null, Texture texture=null)
+	public void SetTextures(Texture[] textures=null, Texture texture=null)
 	{
-		if (cubeMeshRenderers != null && cubeMeshRenderers.Length >= 6 && textures.Length >= 6)
+		if(cubeObject.activeSelf && cubeMeshRenderers != null && cubeMeshRenderers.Length >= 6 && textures!=null && textures.Length >= 6)
 		{
 			for (int i = 0; i < 6; ++i)
 				cubeMeshRenderers[i].material.mainTexture = textures[i];
-		}else if (panoMeshRenderer && texture)
+		}else if (panoObject.activeSelf && panoMeshRenderer && texture)
 			panoMeshRenderer.material.mainTexture = texture;
 	}
 

@@ -232,6 +232,10 @@ Prefab:
       propertyPath: m_LocalScale.y
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 52499794822b14307843cdfae61ea2f0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52499794822b14307843cdfae61ea2f0, type: 3}
   m_IsPrefabAsset: 0
@@ -413,7 +417,33 @@ MonoBehaviour:
   - {fileID: 2800000, guid: a8ffa6cec265546e4b7ea279d58bb061, type: 3}
   - {fileID: 2800000, guid: 7fed2884719064acabfeb64c961c1776, type: 3}
   - {fileID: 2800000, guid: edcac3808a23f4ac391e10f0e02c8557, type: 3}
-  panoTextures: []
+  panoTextures:
+  - {fileID: 2800000, guid: a60ead7809b0f4f53a78380e21e8e9cd, type: 3}
+  - {fileID: 2800000, guid: d5b8c754e538742cfb2d7a569d6b5ee0, type: 3}
+  - {fileID: 2800000, guid: 4871695e30dbb43c4833dcfcb128c050, type: 3}
+  - {fileID: 2800000, guid: 82bbb40f6e407472daf1ede8010797d2, type: 3}
+  - {fileID: 2800000, guid: f84ad2d8f13f04ab5afb2048a246c0e4, type: 3}
+  - {fileID: 2800000, guid: b6a194ac2dc734226a73193b55a7f288, type: 3}
+  - {fileID: 2800000, guid: 3f75f850b31dd4ea4a4a5fdaac3cf0a3, type: 3}
+  - {fileID: 2800000, guid: 7c3a8295fe1d3493f9ab1cd82247dcc9, type: 3}
+  - {fileID: 2800000, guid: e63fed7c466f1412fa7df7372b6b965e, type: 3}
+  - {fileID: 2800000, guid: 0d1211f7d4f124a629e720ffd47e90c2, type: 3}
+  - {fileID: 2800000, guid: e6bf8aef7b0494260a6d7454a1b844a5, type: 3}
+  - {fileID: 2800000, guid: 4003def2e4ab048199b3439e9223d24b, type: 3}
+  - {fileID: 2800000, guid: c654c34a62ef941c6baf41e119da6a2b, type: 3}
+  - {fileID: 2800000, guid: 05883e3caaff54e52bb55173d2028518, type: 3}
+  - {fileID: 2800000, guid: c0b98394b96c1439d8d38619fa171277, type: 3}
+  - {fileID: 2800000, guid: ac987ddf7787244d6acb61503a21dc4e, type: 3}
+  - {fileID: 2800000, guid: 51dccdb489f0e4c169d9e6a684ade0d7, type: 3}
+  - {fileID: 2800000, guid: 47066d05202d04f939e86b0526b30b0a, type: 3}
+  - {fileID: 2800000, guid: 33399e2cfe6fb46dda5f52317408d8db, type: 3}
+  - {fileID: 2800000, guid: f1f8d46106e084762ac3a0d9e72be910, type: 3}
+  - {fileID: 2800000, guid: 04e1a0f1c9c2c433bb80d8a716eb7c99, type: 3}
+  - {fileID: 2800000, guid: d08f4eda1001141a9bbc797d272836c8, type: 3}
+  - {fileID: 2800000, guid: dc59e6a97d4a5495189e67b1c8f2f8f0, type: 3}
+  - {fileID: 2800000, guid: 9be3a56c44c5a4a3bafb7720ae1254ea, type: 3}
+  - {fileID: 2800000, guid: 4d90eba4a43c845c88046f7114ec7bf7, type: 3}
+  - {fileID: 2800000, guid: 0ecf74a56deca407a8e5c04e020549f8, type: 3}
   speed: 0.02
 --- !u!4 &166647073 stripped
 Transform:
