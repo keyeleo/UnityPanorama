@@ -29,6 +29,7 @@ public class Character : MonoBehaviour {
         //rotation
         if (Input.GetMouseButton(0))
         {
+            direction.x += Input.GetAxis("Mouse Y") * turn;
             direction.y += Input.GetAxis("Mouse X") * turn;
             transform.rotation = Quaternion.Euler(direction);
         }

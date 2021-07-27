@@ -28,7 +28,7 @@ public class PanoScene : MonoBehaviour {
 	// Use this for initialization
 	void Start()
 	{
-		Debug.Log(settings.text);
+		//Debug.Log(settings.text);
 		var obj = JObject.Parse(settings.text);
 		var jloc = (JObject)obj["locations"];
 		var jpoints = (JArray)jloc["points"];
@@ -54,7 +54,7 @@ public class PanoScene : MonoBehaviour {
 			location.spot.z = (float)jvp["y"];
 
 			locations[i] = location;
-			//Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z);
+			//Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z+" - "+location.angle);
 
 			//instantiate spots
 			var spot = GameObject.Instantiate(spotObject, location.spot, Quaternion.identity);
@@ -65,7 +65,7 @@ public class PanoScene : MonoBehaviour {
 
 		var jinfo = (JObject)obj["catalogue"];
 		var title = (string)jinfo["title"];
-		Debug.Log("load scene: " + title+",total spots "+locations.Length);
+		//Debug.Log("load scene: " + title+",total spots "+locations.Length);
 
 		if (character)
         {
