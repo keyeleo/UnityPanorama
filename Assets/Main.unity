@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641234, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -234,7 +234,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 52499794822b14307843cdfae61ea2f0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52499794822b14307843cdfae61ea2f0, type: 3}
@@ -255,6 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b88e8789679c4194afaa8570bda007f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneObject: {fileID: 1589808891}
   panoObject: {fileID: 1356576602834714, guid: ff4e87e1e12104dbc9c2cd3060b9b3e8, type: 2}
   spotObject: {fileID: 1860471873939750, guid: 82478eaea9ad541889ba0911eff2fdf8, type: 2}
   character: {fileID: 1900725050}
@@ -445,9 +446,15 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 4d90eba4a43c845c88046f7114ec7bf7, type: 3}
   - {fileID: 2800000, guid: 0ecf74a56deca407a8e5c04e020549f8, type: 3}
   speed: 0.2
+  sceneAlpha: 0.8
 --- !u!4 &166647073 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 52499794822b14307843cdfae61ea2f0,
+    type: 3}
+  m_PrefabInternal: {fileID: 100622241}
+--- !u!1 &1589808891 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 52499794822b14307843cdfae61ea2f0,
     type: 3}
   m_PrefabInternal: {fileID: 100622241}
 --- !u!1 &1900725046

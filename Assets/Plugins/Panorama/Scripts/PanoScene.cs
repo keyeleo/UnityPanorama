@@ -7,6 +7,7 @@ public class PanoScene : MonoBehaviour {
 
 	public static PanoScene Instance = null;
 
+	public GameObject sceneObject;
 	public GameObject panoObject;
 	public GameObject spotObject;
 	public Character character;
@@ -16,6 +17,7 @@ public class PanoScene : MonoBehaviour {
 	public Texture[] cubeTextures;
 	public Texture[] panoTextures;
 	public float speed = 0.2f;
+	public float sceneAlpha = 0.6f;
 
 	Panorama panorama;
 	Location[] locations;
@@ -74,6 +76,7 @@ public class PanoScene : MonoBehaviour {
 			panorama = pano.GetComponent<Panorama>();
         }
 
+		preprocessSceneMaterial();
 		StartCoroutine(MoveTo(locations[0].locationid, true));
     }
 
@@ -119,10 +122,12 @@ public class PanoScene : MonoBehaviour {
 						iTween.MoveTo(character.gameObject, location.viewpoint, time);
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
-
+						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+
 						yield return new WaitForSeconds(time / 2);
 						panorama.SetTextures(textures, texture);
+						iTween.FadeTo(sceneObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 1.0f, "time", time / 2, "easetype", iTween.EaseType.easeOutExpo));
 					}
 				}
@@ -131,6 +136,17 @@ public class PanoScene : MonoBehaviour {
 			}
 		}
 		yield return null;
+	}
+
+	void preprocessSceneMaterial()
+    {
+		var list = new List<Material>();
+		sceneObject.GetComponent<Renderer>().GetMaterials(list);
+		foreach(var mat in list)
+        {
+			SetMaterialRenderingMode(mat, RenderingMode.Fade);
+        }
+		iTween.FadeTo(sceneObject, 0.0f, 0.01f);
 	}
 
 	public bool FindAdjacent(Location target, Vector3 source, float threshold=1f)
@@ -157,6 +173,57 @@ public class PanoScene : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	enum RenderingMode
+	{
+		Opaque,
+		Cutout,
+		Fade,
+		Transparent,
+	}
+
+	void SetMaterialRenderingMode(Material material, RenderingMode renderingMode)
+	{
+		switch (renderingMode)
+		{
+			case RenderingMode.Opaque:
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+				material.SetInt("_ZWrite", 1);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.DisableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.renderQueue = -1;
+				break;
+			case RenderingMode.Cutout:
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+				material.SetInt("_ZWrite", 1);
+				material.EnableKeyword("_ALPHATEST_ON");
+				material.DisableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.renderQueue = 2450;
+				break;
+			case RenderingMode.Fade:
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+				material.SetInt("_ZWrite", 0);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.EnableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.renderQueue = 3000;
+				break;
+			case RenderingMode.Transparent:
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+				material.SetInt("_ZWrite", 0);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.DisableKeyword("_ALPHABLEND_ON");
+				material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.renderQueue = 3000;
+				break;
+		}
 	}
 
 	public class Location
