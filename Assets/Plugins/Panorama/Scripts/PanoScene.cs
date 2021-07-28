@@ -152,7 +152,7 @@ public class PanoScene : MonoBehaviour
 		sceneObject.GetComponent<Renderer>().GetMaterials(list);
 		foreach (var mat in list)
 		{
-			SetMaterialTransparentMask(mat);
+			Utility.SetMaterialTransparentMask(mat);
 		}
 		iTween.FadeTo(sceneObject, sceneAlpha0, 0.01f);
 	}
@@ -182,21 +182,6 @@ public class PanoScene : MonoBehaviour
 	void SetMaterialBackground(Material material)
 	{
 		material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Background;
-	}
-
-	void SetMaterialTransparentMask(Material material)
-	{
-		material.SetInt("_ZWrite", 1);
-		material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
-		//material.SetInt("_ColorMask", 0);
-		material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-		material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-
-		material.DisableKeyword("_ALPHATEST_ON");
-		material.EnableKeyword("_ALPHABLEND_ON");
-		material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-
-		material.renderQueue = (int)(UnityEngine.Rendering.RenderQueue.Geometry - 10);
 	}
 
 	public class Location

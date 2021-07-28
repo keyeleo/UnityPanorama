@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Utility {
+public class Utility
+{
 
 	public enum RenderingMode
 	{
@@ -54,4 +55,20 @@ public class Utility {
 				break;
 		}
 	}
+
+	public static void SetMaterialTransparentMask(Material material)
+	{
+		material.SetInt("_ZWrite", 1);
+		material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
+		//material.SetInt("_ColorMask", 0);
+		material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+
+		material.DisableKeyword("_ALPHATEST_ON");
+		material.EnableKeyword("_ALPHABLEND_ON");
+		material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+
+		material.renderQueue = (int)(UnityEngine.Rendering.RenderQueue.Geometry - 10);
+	}
+
 }

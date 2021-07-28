@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
-    public bool teleport = false;
+public class Character : MonoBehaviour
+{
+    public bool teleport = true;
     public float speed = 0.02f;
     public float turn = 0.5f;
 
@@ -12,15 +13,6 @@ public class Character : MonoBehaviour {
     private void Start()
     {
         direction = transform.localEulerAngles;
-    }
-
-    void moveTo(Vector3 target)
-    {
-        float time=Vector3.Distance(target, transform.position)/speed*0.1f;
-        if (time > 0.001f)
-        {
-            iTween.MoveTo(gameObject, target, time);
-        }
     }
 
     // Update is called once per frame
@@ -73,8 +65,9 @@ public class Character : MonoBehaviour {
         }
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 }
