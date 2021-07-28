@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-public class PanoScene : MonoBehaviour {
+public class PanoScene : MonoBehaviour
+{
 
 	public static PanoScene Instance = null;
 
@@ -17,7 +18,8 @@ public class PanoScene : MonoBehaviour {
 	public Texture[] cubeTextures;
 	public Texture[] panoTextures;
 	public float speed = 0.2f;
-	public float sceneAlpha = 0.6f;
+	public float sceneAlpha0 = 0.0f;
+	public float sceneAlpha1 = 0.75f;
 
 	Panorama panorama;
 	Location[] locations;
@@ -35,7 +37,8 @@ public class PanoScene : MonoBehaviour {
 		var jloc = (JObject)obj["locations"];
 		var jpoints = (JArray)jloc["points"];
 		locations = new Location[jpoints.Count];
-		for(int i=0;i< jpoints.Count; ++i) {
+		for (int i = 0; i < jpoints.Count; ++i)
+		{
 			Location location = new Location();
 			var jpoint = (JObject)jpoints[i];
 			//locationid
@@ -65,28 +68,24 @@ public class PanoScene : MonoBehaviour {
 		}
 
 
-		var jinfo = (JObject)obj["catalogue"];
-		var title = (string)jinfo["title"];
-		//Debug.Log("load scene: " + title+",total spots "+locations.Length);
-
 		if (character)
-        {
-            var pano = GameObject.Instantiate(panoObject, Vector3.zero, Quaternion.identity);
+		{
+			var pano = GameObject.Instantiate(panoObject, Vector3.zero, Quaternion.identity);
 			pano.transform.SetParent(transform);
 			panorama = pano.GetComponent<Panorama>();
-        }
+		}
 
 		preprocessSceneMaterial();
 		StartCoroutine(MoveTo(locations[0].locationid, true));
-    }
+	}
 
-	public IEnumerator MoveTo(string locationid, bool teleport=false)
-    {
-		for(int i = 0; i < locations.Length; ++i)
-        {
+	public IEnumerator MoveTo(string locationid, bool teleport = false)
+	{
+		for (int i = 0; i < locations.Length; ++i)
+		{
 			Location location = locations[i];
-            if (location.locationid == locationid)
-            {
+			if (location.locationid == locationid)
+			{
 				float time = Vector3.Distance(location.viewpoint, transform.position) / speed * 0.1f;
 				if (time > 0.001f)
 				{
@@ -102,7 +101,7 @@ public class PanoScene : MonoBehaviour {
 					}
 					foreach (Texture tex in panoTextures)
 					{
-						if (tex.name==location.locationid)
+						if (tex.name == location.locationid)
 						{
 							texture = tex;
 							break;
@@ -111,23 +110,23 @@ public class PanoScene : MonoBehaviour {
 
 					//move camera and panorama
 					if (teleport)
-                    {
+					{
 						character.gameObject.transform.localPosition = location.viewpoint;
 						panorama.gameObject.transform.localPosition = location.viewpoint;
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 						panorama.SetTextures(textures, texture);
 					}
 					else
-                    {
+					{
 						iTween.MoveTo(character.gameObject, location.viewpoint, time);
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
-						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha1, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 
 						yield return new WaitForSeconds(time / 2);
 						panorama.SetTextures(textures, texture);
-						iTween.FadeTo(sceneObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha0, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 1.0f, "time", time / 2, "easetype", iTween.EaseType.easeOutExpo));
 					}
 				}
@@ -139,91 +138,65 @@ public class PanoScene : MonoBehaviour {
 	}
 
 	void preprocessSceneMaterial()
-    {
+	{
 		var list = new List<Material>();
+		foreach (var renderer in panorama.cubeObject.GetComponentsInChildren<Renderer>())
+		{
+			renderer.GetMaterials(list);
+			foreach (var mat in list)
+			{
+				SetMaterialBackground(mat);
+			}
+		}
+
 		sceneObject.GetComponent<Renderer>().GetMaterials(list);
-		foreach(var mat in list)
-        {
-			SetMaterialRenderingMode(mat, RenderingMode.Fade);
-        }
-		iTween.FadeTo(sceneObject, 0.0f, 0.01f);
+		foreach (var mat in list)
+		{
+			SetMaterialTransparentMask(mat);
+		}
+		iTween.FadeTo(sceneObject, sceneAlpha0, 0.01f);
 	}
 
-	public bool FindAdjacent(Location target, Vector3 source, float threshold=1f)
-    {
+	public Location FindAdjacent(Vector3 source, float threshold = 1f)
+	{
 		float distance = float.PositiveInfinity;
 		int index = -1;
-		for(int i = 0; i < locations.Length; ++i)
-        {
+		for (int i = 0; i < locations.Length; ++i)
+		{
 			float d = Vector3.Distance(locations[i].spot, source);
 			if (d < distance)
-            {
+			{
 				distance = d;
 				index = i;
 			}
 		}
-        if (index != -1)
-        {
-			target = locations[index];
-			return true;
-        }else
-			return false;
-    }
+		return index == -1 ? null : locations[index];
+	}
 
 	// Update is called once per frame
-	void Update () {
-		
+	void Update()
+	{
+
 	}
 
-	enum RenderingMode
+	void SetMaterialBackground(Material material)
 	{
-		Opaque,
-		Cutout,
-		Fade,
-		Transparent,
+		material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Background;
 	}
 
-	void SetMaterialRenderingMode(Material material, RenderingMode renderingMode)
+	void SetMaterialTransparentMask(Material material)
 	{
-		switch (renderingMode)
-		{
-			case RenderingMode.Opaque:
-				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-				material.SetInt("_ZWrite", 1);
-				material.DisableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
-				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-				material.renderQueue = -1;
-				break;
-			case RenderingMode.Cutout:
-				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-				material.SetInt("_ZWrite", 1);
-				material.EnableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
-				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-				material.renderQueue = 2450;
-				break;
-			case RenderingMode.Fade:
-				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-				material.SetInt("_ZWrite", 0);
-				material.DisableKeyword("_ALPHATEST_ON");
-				material.EnableKeyword("_ALPHABLEND_ON");
-				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-				material.renderQueue = 3000;
-				break;
-			case RenderingMode.Transparent:
-				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-				material.SetInt("_ZWrite", 0);
-				material.DisableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
-				material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-				material.renderQueue = 3000;
-				break;
-		}
+		material.SetInt("_ZWrite", 1);
+		material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
+		//material.SetInt("_ColorMask", 0);
+		material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+
+		material.DisableKeyword("_ALPHATEST_ON");
+		material.EnableKeyword("_ALPHABLEND_ON");
+		material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+
+		material.renderQueue = (int)(UnityEngine.Rendering.RenderQueue.Geometry - 10);
 	}
 
 	public class Location
