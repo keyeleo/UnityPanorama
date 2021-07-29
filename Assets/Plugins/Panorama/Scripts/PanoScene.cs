@@ -140,7 +140,7 @@ public class PanoScene : MonoBehaviour
 	void preprocessSceneMaterial()
 	{
 		var list = new List<Material>();
-		foreach (var renderer in panorama.cubeObject.GetComponentsInChildren<Renderer>())
+		foreach (var renderer in panorama.gameObject.GetComponentsInChildren<Renderer>())
 		{
 			renderer.GetMaterials(list);
 			foreach (var mat in list)
@@ -182,6 +182,7 @@ public class PanoScene : MonoBehaviour
 	void SetMaterialBackground(Material material)
 	{
 		material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Background;
+		material.SetFloat("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 	}
 
 	public class Location
