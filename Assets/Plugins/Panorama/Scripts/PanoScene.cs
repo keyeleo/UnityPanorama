@@ -23,6 +23,7 @@ public class PanoScene : MonoBehaviour
 
 	Panorama panorama;
 	Location[] locations;
+	GameObject cursorObject;
 
 	void Awake()
 	{
@@ -77,6 +78,24 @@ public class PanoScene : MonoBehaviour
 
 		preprocessSceneMaterial();
 		StartCoroutine(MoveTo(locations[0].locationid, true));
+	}
+
+	public void SetCursor(Vector3 position, Vector3 eular)
+    {
+		if (!cursorObject)
+		{
+			cursorObject = GameObject.Instantiate(spotObject, position, Quaternion.identity);
+			cursorObject.transform.SetParent(transform);
+        }
+        else
+        {
+			cursorObject.transform.position = position;
+        }
+	}
+
+	public IEnumerator MoveTo(Vector3 position, bool teleport = false)
+    {
+		yield return MoveTo(FindAdjacent(position).locationid);
 	}
 
 	public IEnumerator MoveTo(string locationid, bool teleport = false)
@@ -157,7 +176,7 @@ public class PanoScene : MonoBehaviour
 		iTween.FadeTo(sceneObject, sceneAlpha0, 0.01f);
 	}
 
-	public Location FindAdjacent(Vector3 source, float threshold = 1f)
+	Location FindAdjacent(Vector3 source, float threshold = 1f)
 	{
 		float distance = float.PositiveInfinity;
 		int index = -1;

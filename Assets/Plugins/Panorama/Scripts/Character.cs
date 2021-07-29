@@ -7,6 +7,7 @@ public class Character : MonoBehaviour
     public bool teleport = true;
     public float speed = 0.02f;
     public float turn = 0.5f;
+    public float limitAngle = 20f;
 
     private Vector3 direction;
 
@@ -23,6 +24,7 @@ public class Character : MonoBehaviour
         {
             direction.x += Input.GetAxis("Mouse Y") * turn;
             direction.y += Input.GetAxis("Mouse X") * turn;
+            direction.x = Mathf.Min(limitAngle, Mathf.Max(-limitAngle, direction.x));
             transform.rotation = Quaternion.Euler(direction);
         }
 

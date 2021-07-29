@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[System.Obsolete]
 public class Touchable : MonoBehaviour
 {
 
@@ -18,14 +19,13 @@ public class Touchable : MonoBehaviour
 
 	}
 
-    [System.Obsolete]
     public void OnPointerClick(PointerEventData data)
 	{
-		StartCoroutine(PanoScene.Instance.MoveTo(PanoScene.Instance.FindAdjacent(data.worldPosition).locationid));
+		StartCoroutine(PanoScene.Instance.MoveTo(data.worldPosition));
 	}
 
 	public void OnPointerHover(PointerEventData data)
 	{
-		//Debug.Log("----hover " + name);
+		//PanoScene.Instance.SetCursor(data.worldPosition, data.worldNormal);
 	}
 }
