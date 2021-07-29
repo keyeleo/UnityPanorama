@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PanoScene : MonoBehaviour
 {
-
 	public static PanoScene Instance = null;
 
-	public GameObject sceneObject;
-	public GameObject panoObject;
-	public GameObject spotObject;
+	public GameObject panoPrefab;
+	public GameObject spotPrefab;
 	public Character character;
-	public Transform spots;
 
 	public TextAsset settings;
 	public Texture[] cubeTextures;
 	public Texture[] panoTextures;
+
 	public float speed = 0.2f;
 	public float sceneAlpha0 = 0.0f;
 	public float sceneAlpha1 = 0.75f;
@@ -34,6 +33,9 @@ public class PanoScene : MonoBehaviour
 	void Start()
 	{
 		//Debug.Log(settings.text);
+		GameObject spots = new GameObject("Spots");
+		spots.transform.SetParent(transform.parent);
+
 		var obj = JObject.Parse(settings.text);
 		var jloc = (JObject)obj["locations"];
 		var jpoints = (JArray)jloc["points"];
@@ -63,16 +65,16 @@ public class PanoScene : MonoBehaviour
 			//Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z+" - "+location.angle);
 
 			//instantiate spots
-			var spot = GameObject.Instantiate(spotObject, location.spot, Quaternion.identity);
-			spot.transform.SetParent(spots);
+			var spot = GameObject.Instantiate(spotPrefab, location.spot, Quaternion.identity);
+			spot.transform.SetParent(spots.transform);
 			spot.name = location.locationid;
 		}
 
 
 		if (character)
 		{
-			var pano = GameObject.Instantiate(panoObject, Vector3.zero, Quaternion.identity);
-			pano.transform.SetParent(transform);
+			var pano = GameObject.Instantiate(panoPrefab, Vector3.zero, Quaternion.identity);
+			pano.transform.SetParent(transform.parent);
 			panorama = pano.GetComponent<Panorama>();
 		}
 
@@ -84,13 +86,24 @@ public class PanoScene : MonoBehaviour
     {
 		if (!cursorObject)
 		{
-			cursorObject = GameObject.Instantiate(spotObject, position, Quaternion.identity);
-			cursorObject.transform.SetParent(transform);
+			cursorObject = GameObject.Instantiate(spotPrefab, position, Quaternion.identity);
+			cursorObject.transform.SetParent(transform.parent);
         }
         else
         {
 			cursorObject.transform.position = position;
         }
+	}
+
+	[System.Obsolete]
+	public void OnPointerClick(PointerEventData data)
+	{
+		StartCoroutine(PanoScene.Instance.MoveTo(data.worldPosition));
+	}
+
+	public void OnPointerHover(PointerEventData data)
+	{
+		//PanoScene.Instance.SetCursor(data.worldPosition, data.worldNormal);
 	}
 
 	public IEnumerator MoveTo(Vector3 position, bool teleport = false)
@@ -140,12 +153,12 @@ public class PanoScene : MonoBehaviour
 						iTween.MoveTo(character.gameObject, location.viewpoint, time);
 						iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
 						panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
-						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha1, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+						iTween.FadeTo(gameObject, iTween.Hash("alpha", sceneAlpha1, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 
 						yield return new WaitForSeconds(time / 2);
 						panorama.SetTextures(textures, texture);
-						iTween.FadeTo(sceneObject, iTween.Hash("alpha", sceneAlpha0, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
+						iTween.FadeTo(gameObject, iTween.Hash("alpha", sceneAlpha0, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 						iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 1.0f, "time", time / 2, "easetype", iTween.EaseType.easeOutExpo));
 					}
 				}
@@ -168,12 +181,12 @@ public class PanoScene : MonoBehaviour
 			}
 		}
 
-		sceneObject.GetComponent<Renderer>().GetMaterials(list);
+		gameObject.GetComponent<Renderer>().GetMaterials(list);
 		foreach (var mat in list)
 		{
 			Utility.SetMaterialTransparentMask(mat);
 		}
-		iTween.FadeTo(sceneObject, sceneAlpha0, 0.01f);
+		iTween.FadeTo(gameObject, sceneAlpha0, 0.01f);
 	}
 
 	Location FindAdjacent(Vector3 source, float threshold = 1f)

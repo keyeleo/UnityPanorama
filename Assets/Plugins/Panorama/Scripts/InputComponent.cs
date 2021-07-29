@@ -9,7 +9,7 @@ public class InputComponent : MonoBehaviour
 	public float CheckInterval = 0.1f;
 	public float CheckDistance = 180f;
 	public float RepeatTime = 0.2f;
-	public bool HoverEnabled = true;
+	public bool HoverEnabled = false;
 
 	public Camera workCamera;
 	public EventSystem eventSystem;
