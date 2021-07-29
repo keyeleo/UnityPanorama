@@ -18,7 +18,8 @@ public class Touchable : MonoBehaviour
 
 	}
 
-	public void OnPointerClick(PointerEventData data)
+    [System.Obsolete]
+    public void OnPointerClick(PointerEventData data)
 	{
 		StartCoroutine(PanoScene.Instance.MoveTo(PanoScene.Instance.FindAdjacent(data.worldPosition).locationid));
 	}
@@ -26,10 +27,5 @@ public class Touchable : MonoBehaviour
 	public void OnPointerHover(PointerEventData data)
 	{
 		//Debug.Log("----hover " + name);
-	}
-
-	void OnTouched()
-	{
-		//Debug.Log("Touched " + name);
 	}
 }
