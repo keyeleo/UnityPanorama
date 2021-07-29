@@ -9,6 +9,7 @@ public class InputComponent : MonoBehaviour
 	public float CheckInterval = 0.1f;
 	public float CheckDistance = 180f;
 	public float RepeatTime = 0.2f;
+	public bool HoverEnabled = true;
 
 	public Camera workCamera;
 	public EventSystem eventSystem;
@@ -23,7 +24,9 @@ public class InputComponent : MonoBehaviour
 	//Vector3 originalCameraPosition=Vector3.zero;
 	Vector3 dragMousePosition = Vector3.zero;
 	GameObject dragGameObject = null;
-	//PointerEventData eventData;
+	GameObject pressedGameObject = null;
+	RaycastHit hit = new RaycastHit();
+    PointerEventData eventData;
 	//List<RaycastResult> guiObjectList;
 
 	InputHandler handler;
@@ -35,77 +38,74 @@ public class InputComponent : MonoBehaviour
 		//if(null!=workCamera)
 		//	originalCameraPosition=workCamera.transform.position;
 		handler = new InputHandler(workCamera);
+		eventData = new PointerEventData(eventSystem);
 	}
 
+	/*
+	 * PointerEnter
+	 * PointerHover
+	 * PointerExit
+	 * PointerDown
+	 * PointerUp
+	 * PointerClick
+	 * PointerDoubleClick
+	 * BeginDrag
+	 * Drag
+	 * EndDrag
+	 */
 	void Update()
 	{
 		checkTime += Time.deltaTime;
 		if (checkTime > CheckInterval)
 		{
-			var clicked = false;
 			GameObject target = null;
-			if (Input.GetMouseButtonDown(0))
+			if (HoverEnabled)
 			{
-				target = RayCastGameObject();
-				clickTime2 = Time.realtimeSinceStartup;
-				if (clickTime2 - clickTime1 < RepeatTime)
+				if (RayCastGameObject(out hit))
 				{
-					clicked = true;
-					handler.OnDoubleClick(target, Input.mousePosition);
+					target = hit.collider.gameObject;
+					eventData.worldPosition = hit.point;
+                    eventData.worldNormal = hit.normal;
+					handler.OnPointerHover(target, eventData);
 				}
-				if (!clicked)
-				{
-					clicked = true;
-					handler.OnClick(target, Input.mousePosition);
-				}
-				clickTime1 = clickTime2;
 			}
 
-			if (!clicked)
+			if (Input.GetMouseButtonDown(0))
 			{
-				if (Input.GetMouseButton(0))
+				if (!target && RayCastGameObject(out hit))
+					target = hit.collider.gameObject;
+
+				if (target)
 				{
-					checkTime = 0f;
-					if (!dragging)
-					{
-						//check and start drag
-						dragging = true;
-						dragMousePosition = Input.mousePosition;
-						if (target == null)
-							target = RayCastGameObject();
-						if (target != null)
-							dragGameObject = target;
-						handler.OnDragBegin(target, dragMousePosition);
-					}
-					else
-					{
-						//drag
-						handler.OnDrag(dragGameObject, Input.mousePosition - dragMousePosition);
-					}
+					pressedGameObject = target;
 				}
-				else if (dragging)
+				else
+					pressedGameObject = null;
+			}
+			else if (Input.GetMouseButtonUp(0))
+            {
+				if (!target && RayCastGameObject(out hit))
+					target = hit.collider.gameObject;
+				if (target && !dragging && pressedGameObject == hit.collider.gameObject)
 				{
-					//stop drag
-					dragging = false;
-					handler.OnDragEnd(dragGameObject, Input.mousePosition);
-					if (dragGameObject != null)
-						dragGameObject = null;
+					eventData.worldPosition = hit.point;
+					handler.OnPointerClick(pressedGameObject, eventData);
 				}
+				pressedGameObject = null;
 			}
 		}
 	}
 
-	GameObject RayCastGameObject()
+	bool RayCastGameObject(out RaycastHit hit)
 	{
 		//skip GUI RaycastObjects
 		if (true/*!CheckGuiRaycastObjects()*/)
 		{
 			//ray Raycast 3D Objects
-			RaycastHit hit;
 			if (Physics.Raycast(workCamera.ScreenPointToRay(Input.mousePosition), out hit, CheckDistance))
-				return hit.collider.gameObject;
+				return true;
 		}
-		return null;
+		return false;
 	}
 
 	//bool CheckGuiRaycastObjects(){
@@ -126,7 +126,26 @@ public class InputComponent : MonoBehaviour
 			workCamera = camera;
 		}
 
-		public void OnClick(GameObject target, Vector3 position)
+		string debug(GameObject target, Vector3 position)
+        {
+			return target.name + " (" + position.x +", " + position.y + ", " + position.z + ")";
+        }
+
+		public void OnPointerClick(GameObject target, PointerEventData eventData)
+		{
+			//Debug.Log("----click " + debug(target, eventData.worldPosition));
+			target.SendMessage("OnPointerClick", eventData, SendMessageOptions.DontRequireReceiver);
+		}
+
+		public void OnPointerHover(GameObject target, PointerEventData eventData)
+		{
+			//Debug.Log("----hover " + debug(target, eventData.worldPosition));
+			target.SendMessage("OnPointerHover", eventData, SendMessageOptions.DontRequireReceiver);
+		}
+
+
+
+		public void OnClickBegin(GameObject target, Vector3 position)
 		{
 			if (target != null)
 			{

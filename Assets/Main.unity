@@ -250,7 +250,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 166647071}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b88e8789679c4194afaa8570bda007f, type: 3}
   m_Name: 
@@ -591,6 +591,7 @@ MonoBehaviour:
   CheckInterval: 0.1
   CheckDistance: 180
   RepeatTime: 0.2
+  HoverEnabled: 1
   workCamera: {fileID: 1900725048}
   eventSystem: {fileID: 1900725052}
 --- !u!114 &1900725052

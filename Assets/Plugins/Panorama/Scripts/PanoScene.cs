@@ -64,7 +64,7 @@ public class PanoScene : MonoBehaviour
 			//instantiate spots
 			var spot = GameObject.Instantiate(spotObject, location.spot, Quaternion.identity);
 			spot.transform.SetParent(spots);
-			spot.GetComponentInChildren<Spot>().locationid = location.locationid;
+			spot.name = location.locationid;
 		}
 
 
