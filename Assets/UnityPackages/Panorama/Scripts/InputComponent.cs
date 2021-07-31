@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
 using System.Collections.Generic;
 
+//Pointer input component
 public class InputComponent : MonoBehaviour
 {
 	public float CheckInterval = 0.1f;
@@ -34,6 +34,18 @@ public class InputComponent : MonoBehaviour
 
 	public void Start()
 	{
+		if (!eventSystem)
+		{
+			eventSystem = GetComponent<EventSystem>();
+			if (!eventSystem)
+			{
+				eventSystem = GetComponentInChildren<EventSystem>();
+				if (!eventSystem)
+				{
+					eventSystem = gameObject.AddComponent<EventSystem>();
+				}
+			}
+		}
 		guiObjectList = new List<RaycastResult>();
 		//if(null!=workCamera)
 		//	originalCameraPosition=workCamera.transform.position;
@@ -116,7 +128,7 @@ public class InputComponent : MonoBehaviour
 			return false;
 	}
 
-public class InputHandler
+	public class InputHandler
 	{
 		Camera workCamera;
 		Vector3 dragGameObjectPosition = Vector3.zero;

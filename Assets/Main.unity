@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panoPrefab: {fileID: 1356576602834714, guid: ff4e87e1e12104dbc9c2cd3060b9b3e8, type: 2}
   spotPrefab: {fileID: 1860471873939750, guid: 82478eaea9ad541889ba0911eff2fdf8, type: 2}
-  character: {fileID: 1900725050}
+  workCamera: {fileID: 1900725046}
   settings: {fileID: 4900000, guid: 2f7d3a0dafeb74a968ecb0640b14490b, type: 3}
   cubeTextures:
   - {fileID: 2800000, guid: 8a9056c978053489cab9760a8b88fe93, type: 3}
@@ -418,20 +418,6 @@ MonoBehaviour:
   speed: 0.2
   sceneAlpha0: 0
   sceneAlpha1: 0.75
---- !u!64 &1589808895
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1589808891}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 4300000, guid: 52499794822b14307843cdfae61ea2f0, type: 3}
 --- !u!1 &1900725046
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,9 +428,8 @@ GameObject:
   - component: {fileID: 1900725049}
   - component: {fileID: 1900725048}
   - component: {fileID: 1900725047}
-  - component: {fileID: 1900725050}
-  - component: {fileID: 1900725052}
   - component: {fileID: 1900725051}
+  - component: {fileID: 1900725050}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -523,10 +508,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41390d520dc7049ae806b7b6ca143cff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleport: 0
-  speed: 0.02
-  turn: 1
-  limitAngle: 20
+  teleport: 1
+  forwardSpeed: 0.02
+  turnSpeed: 0.5
+  limitPitch: 20
 --- !u!114 &1900725051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,22 +528,8 @@ MonoBehaviour:
   RepeatTime: 0.2
   HoverEnabled: 0
   workCamera: {fileID: 1900725048}
-  eventSystem: {fileID: 1900725052}
+  eventSystem: {fileID: 0}
   graphicRaycaster: {fileID: 0}
---- !u!114 &1900725052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1900725046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -619905303, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
 --- !u!1 &1900725526
 GameObject:
   m_ObjectHideFlags: 0
