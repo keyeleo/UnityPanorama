@@ -34,6 +34,15 @@ public class InputComponent : MonoBehaviour
 
 	public void Start()
 	{
+        if (!workCamera)
+        {
+			workCamera = GetComponent<Camera>();
+			if (!workCamera)
+			{
+				workCamera = Camera.main;
+			}
+		}
+
 		if (!eventSystem)
 		{
 			eventSystem = GetComponent<EventSystem>();

@@ -33,15 +33,12 @@ namespace Panoramas
 		{
 			Instance = this;
 			gameObject.AddComponent<MeshCollider>();
-		}
 
-		// Use this for initialization
-		void Start()
-		{
 			//Debug.Log(settings.text);
 			GameObject spots = new GameObject("Spots");
 			spots.transform.SetParent(transform.parent);
 
+			var q1 = Quaternion.Euler(0, 90, 0);
 			var obj = JObject.Parse(settings.text);
 			var jloc = (JObject)obj["locations"];
 			var jpoints = (JArray)jloc["points"];
@@ -52,20 +49,25 @@ namespace Panoramas
 				var jpoint = (JObject)jpoints[i];
 				//locationid
 				location.locationid = (string)jpoint["locationid"];
-				//angle
-				location.angle = (float)jpoint["angle"];
-				//viewpoint
-				location.viewpoint = new Vector3();
-				var jvp = (JObject)jpoint["viewpoint"];
-				location.viewpoint.x = (float)jvp["x"];
-				location.viewpoint.y = (float)jvp["z"]; //swap y and z
-				location.viewpoint.z = (float)jvp["y"];
+                //viewpoint
+                location.viewpoint = new Vector3();
+				var jobj = (JObject)jpoint["viewpoint"];
+				location.viewpoint.x = (float)jobj["x"];
+				location.viewpoint.y = (float)jobj["z"]; //swap y and z
+				location.viewpoint.z = (float)jobj["y"];
+				//rotation
+				jobj = (JObject)jpoint["rotation"];
+				location.rotation = new Quaternion(
+					-(float)jobj["x"],
+					-(float)jobj["z"],
+					(float)jobj["y"],
+					(float)jobj["w"])*q1;
 				//spot
 				location.spot = new Vector3();
-				jvp = (JObject)jpoint["spot"];
-				location.spot.x = (float)jvp["x"];
-				location.spot.y = (float)jvp["z"];
-				location.spot.z = (float)jvp["y"];
+				jobj = (JObject)jpoint["spot"];
+				location.spot.x = (float)jobj["x"];
+				location.spot.y = (float)jobj["z"];
+				location.spot.z = (float)jobj["y"];
 
 				locations[i] = location;
 				//Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z+" - "+location.angle);
@@ -81,7 +83,18 @@ namespace Panoramas
 			pano.transform.SetParent(transform.parent);
 			panorama = pano.GetComponent<Panorama>();
 
-			preprocessSceneMaterial();
+			//workCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
+
+            preprocessSceneMaterial();
+
+			//max time 3s
+			float size=Mathf.Max(gameObject.GetComponent<Renderer>().bounds.size.x, gameObject.GetComponent<Renderer>().bounds.size.y);
+			speed = size / 3f;
+		}
+
+		// Use this for initialization
+		void Start()
+		{
 			StartCoroutine(MoveTo(locations[0].locationid, true));
 		}
 
@@ -121,7 +134,7 @@ namespace Panoramas
 				Location location = locations[i];
 				if (location.locationid == locationid)
 				{
-					float time = Vector3.Distance(location.viewpoint, transform.position) / speed * 0.1f;
+					float time = Mathf.Min(0.6f, Vector3.Distance(location.viewpoint, transform.position) / speed);
 					if (time > 0.001f)
 					{
 						Texture[] textures = new Texture[6];
@@ -148,18 +161,18 @@ namespace Panoramas
 						{
 							workCamera.transform.localPosition = location.viewpoint;
 							panorama.gameObject.transform.localPosition = location.viewpoint;
-							panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
+							panorama.gameObject.transform.localRotation = location.rotation;
 							panorama.SetTextures(textures, texture);
 						}
 						else
 						{
 							iTween.MoveTo(workCamera, location.viewpoint, time);
 							iTween.MoveTo(panorama.gameObject, location.viewpoint, time);
-							panorama.gameObject.transform.localEulerAngles = new Vector3(0, location.angle, 0);
 							iTween.FadeTo(gameObject, iTween.Hash("alpha", sceneAlpha1, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 							iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 0.0f, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 
 							yield return new WaitForSeconds(time / 2);
+							panorama.gameObject.transform.localRotation = location.rotation;
 							panorama.SetTextures(textures, texture);
 							iTween.FadeTo(gameObject, iTween.Hash("alpha", sceneAlpha0, "time", time / 2, "easetype", iTween.EaseType.easeInExpo));
 							iTween.FadeTo(panorama.gameObject, iTween.Hash("alpha", 1.0f, "time", time / 2, "easetype", iTween.EaseType.easeOutExpo));
@@ -218,13 +231,15 @@ namespace Panoramas
 		{
 			material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Background;
 			material.SetFloat("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-		}
+            material.SetInt("_ZWrite", 1);
+            material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+        }
 
-		public class Location
+        public class Location
 		{
 			public Vector3 viewpoint;
 			public Vector3 spot;
-			public float angle;
+			public Quaternion rotation;
 			public string locationid;
 		}
 	}
