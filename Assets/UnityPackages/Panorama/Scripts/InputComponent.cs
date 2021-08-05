@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Ximmerse.RhinoX;
 
 //Pointer input component
 public class InputComponent : MonoBehaviour
@@ -15,6 +16,9 @@ public class InputComponent : MonoBehaviour
 	public EventSystem eventSystem;
 	public GraphicRaycaster graphicRaycaster;
 
+#if UNITY_ANDROID
+    public RXController controller;
+#endif
 
 	float clickTime1;
 	float clickTime2;
@@ -92,14 +96,18 @@ public class InputComponent : MonoBehaviour
 				}
 			}
 
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButtonDown(0)
+				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Left_Controller)
+				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
 			{
 				downPosition = Input.mousePosition;
 				if (!target && RayCastGameObject(ref hit))
 					target = hit.collider.gameObject;
 			}
-			else if (Input.GetMouseButtonUp(0))
-            {
+			else if (Input.GetMouseButtonUp(0)
+				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Left_Controller)
+				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+			{
 				float distance = Vector3.Distance(Input.mousePosition, downPosition);
 				if (!target && RayCastGameObject(ref hit))
 					target = hit.collider.gameObject;
@@ -118,7 +126,11 @@ public class InputComponent : MonoBehaviour
 		if (!CheckGuiRaycastObjects())
 		{
 			//ray Raycast 3D Objects
+#if UNITY_EDITOR
 			if (Physics.Raycast(workCamera.ScreenPointToRay(Input.mousePosition), out hit, CheckDistance))
+#elif UNITY_ANDROID
+            if (Physics.Raycast(controller.RaycastOrigin.position, controller.RaycastOrigin.forward, out hit, controller.RaycastDistance, controller.RaycastCullingMask, QueryTriggerInteraction.UseGlobal))
+#endif
 				return true;
 		}
 		return false;

@@ -83,8 +83,6 @@ namespace Panoramas
 			pano.transform.SetParent(transform.parent);
 			panorama = pano.GetComponent<Panorama>();
 
-			//workCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
-
             preprocessSceneMaterial();
 
 			//max time 3s
@@ -200,6 +198,7 @@ namespace Panoramas
 			gameObject.GetComponent<Renderer>().GetMaterials(list);
 			foreach (var mat in list)
 			{
+				mat.shader = Shader.Find("Particles/Standard Unlit");
 				RenderingUtility.SetMaterialTransparentMask(mat);
 			}
 			iTween.FadeTo(gameObject, sceneAlpha0, 0.01f);
