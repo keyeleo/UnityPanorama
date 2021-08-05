@@ -24,6 +24,7 @@ namespace Panoramas
 		//panorama fade alpha
 		public float sceneAlpha0 = 0.0f;
 		public float sceneAlpha1 = 0.75f;
+		public int spawnLocation = 0;
 
 		Panorama panorama;
 		Location[] locations;
@@ -70,7 +71,7 @@ namespace Panoramas
 				location.spot.z = (float)jobj["y"];
 
 				locations[i] = location;
-				//Debug.Log(i + ": " + location.spot.x+ ", " + location.spot.y+ "," + location.spot.z+" - "+location.angle);
+				//Debug.Log(i + ": " + location.spot.ToString("F3"));
 
 				//instantiate spots
 				var spot = GameObject.Instantiate(spotPrefab, location.spot, Quaternion.identity);
@@ -93,7 +94,10 @@ namespace Panoramas
 		// Use this for initialization
 		void Start()
 		{
-			StartCoroutine(MoveTo(locations[0].locationid, true));
+			int i = 0;
+			if (spawnLocation < locations.Length)
+				i = spawnLocation;
+			StartCoroutine(MoveTo(locations[i].locationid, true));
 		}
 
 		public void SetCursor(Vector3 position, Vector3 eular)
@@ -135,6 +139,7 @@ namespace Panoramas
 					float time = Mathf.Min(0.6f, Vector3.Distance(location.viewpoint, transform.position) / speed);
 					if (time > 0.001f)
 					{
+						//Debug.Log("move to " + i + ", " + location.locationid);
 						Texture[] textures = new Texture[6];
 						Texture texture = null;
 						foreach (Texture tex in cubeTextures)

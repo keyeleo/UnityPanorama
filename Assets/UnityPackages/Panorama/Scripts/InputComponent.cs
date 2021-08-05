@@ -7,6 +7,8 @@ using Ximmerse.RhinoX;
 //Pointer input component
 public class InputComponent : MonoBehaviour
 {
+	public Text text;
+
 	public float CheckInterval = 0.1f;
 	public float CheckDistance = 180f;
 	public float RepeatTime = 0.2f;
@@ -17,7 +19,8 @@ public class InputComponent : MonoBehaviour
 	public GraphicRaycaster graphicRaycaster;
 
 #if UNITY_ANDROID
-    public RXController controller;
+	public RXController lController;
+	public RXController rController;
 #endif
 
 	float clickTime1;
@@ -81,13 +84,28 @@ public class InputComponent : MonoBehaviour
     [System.Obsolete]
     void Update()
 	{
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if(RXInput.IsButtonUp(RhinoXButton.ControllerTouchPadButton, ControllerIndex.Controller_Right_Controller)){
+			Vector2 padPointer = Vector2.zero;
+			if (RXInput.GetTouchPadPointer(ref padPointer))
+			{
+				eventData.scrollDelta = padPointer;
+				text.text = "touch " + eventData.scrollDelta.ToString("F3");
+			}
+		}
+#endif
+
 		checkTime += Time.deltaTime;
 		if (checkTime > CheckInterval)
 		{
 			GameObject target = null;
 			if (HoverEnabled)
 			{
-				if (RayCastGameObject(ref hit))
+#if UNITY_ANDROID && !UNITY_EDITOR
+				if (rController && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
+#else
+				if (RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
+#endif
 				{
 					target = hit.collider.gameObject;
 					eventData.worldPosition = hit.point;
@@ -96,22 +114,36 @@ public class InputComponent : MonoBehaviour
 				}
 			}
 
-			if (Input.GetMouseButtonDown(0)
-				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Left_Controller)
-				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+#if UNITY_ANDROID && !UNITY_EDITOR
+			if (rController && RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+			{
+				downPosition = rController.RaycastOrigin.position;
+				if (!target && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
+				{
+#else
+			if (Input.GetMouseButtonDown(0))
 			{
 				downPosition = Input.mousePosition;
-				if (!target && RayCastGameObject(ref hit))
+				if (!target && RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
+				{
+#endif
 					target = hit.collider.gameObject;
+				}
 			}
-			else if (Input.GetMouseButtonUp(0)
-				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Left_Controller)
-				|| RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+#if UNITY_ANDROID && !UNITY_EDITOR
+			else if (rController && RXInput.IsButtonUp(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+			{
+				float distance = Vector3.Distance(rController.RaycastOrigin.position, downPosition);
+				if (!target && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
+#else
+			else if (Input.GetMouseButtonUp(0))
 			{
 				float distance = Vector3.Distance(Input.mousePosition, downPosition);
-				if (!target && RayCastGameObject(ref hit))
+				if (!target && RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
+#endif
 					target = hit.collider.gameObject;
-				if (target && distance<0.01f)
+
+				if (target && distance<0.1f)
 				{
 					eventData.worldPosition = hit.point;
 					handler.OnPointerClick(target, eventData);
@@ -120,17 +152,13 @@ public class InputComponent : MonoBehaviour
 		}
 	}
 
-	bool RayCastGameObject(ref RaycastHit hit)
+	bool RayCastGameObject(Ray ray, ref RaycastHit hit)
 	{
 		//skip GUI RaycastObjects
 		if (!CheckGuiRaycastObjects())
 		{
 			//ray Raycast 3D Objects
-#if UNITY_EDITOR
-			if (Physics.Raycast(workCamera.ScreenPointToRay(Input.mousePosition), out hit, CheckDistance))
-#elif UNITY_ANDROID
-            if (Physics.Raycast(controller.RaycastOrigin.position, controller.RaycastOrigin.forward, out hit, controller.RaycastDistance, controller.RaycastCullingMask, QueryTriggerInteraction.UseGlobal))
-#endif
+			if (Physics.Raycast(ray, out hit, CheckDistance))
 				return true;
 		}
 		return false;
