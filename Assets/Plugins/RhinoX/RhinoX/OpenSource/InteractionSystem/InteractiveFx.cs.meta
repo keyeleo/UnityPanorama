@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: 8e2b0d816474246a6a8afb22529c92b5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - BirthFxPrefab: {fileID: 8020597347264077114, guid: a93b28b58f77d41ad91edaf19bddf176,
+      type: 3}
+  - BirthFxAnchor: {instanceID: 0}
+  - SightedFxAnchor: {instanceID: 0}
+  - SightFxPrefab: {fileID: 8020597347264077114, guid: a93b28b58f77d41ad91edaf19bddf176,
+      type: 3}
+  - TouchFxPrefab: {fileID: 8020597347264077114, guid: a93b28b58f77d41ad91edaf19bddf176,
+      type: 3}
+  - GrabFxPrefab: {fileID: 8020597347264077114, guid: a93b28b58f77d41ad91edaf19bddf176,
+      type: 3}
+  - GrabFxAnchor: {instanceID: 0}
+  - ThrowFxPrefab: {fileID: 8020597347264077114, guid: a93b28b58f77d41ad91edaf19bddf176,
+      type: 3}
+  - ThrowFxAnchor: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

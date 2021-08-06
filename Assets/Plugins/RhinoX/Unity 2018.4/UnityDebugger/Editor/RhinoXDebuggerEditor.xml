@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RhinoXDebuggerEditor</name>
+    </assembly>
+    <members>
+        <member name="T:RhinoXDebugger.EditorDebuggerInspector">
+             <summary>
+             Editor debugger inspector.
+             </summary>
+            </member>
+    </members>
+</doc>

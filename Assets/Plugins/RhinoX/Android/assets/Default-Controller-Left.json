@@ -1,0 +1,10 @@
+{
+	"CARD_GROUP":
+	{
+		"CalibFile": "Default-Controller-Left.dat",
+		"ModeType": "CONTROLLER",
+		"GroupID": 82,
+		"Markers": [44, 15, 25, 39],
+		"MarkersSize": [0.04, 0.04, 0.04, 0.04]
+	}
+}

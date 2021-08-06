@@ -1,0 +1,8 @@
+{
+	"CARD_SINGLE":
+	{
+			"CalibFile": "BigMarker548mm.dat",
+			"Markers": [36],
+			"MarkersSize": [0.548]
+	}
+}
