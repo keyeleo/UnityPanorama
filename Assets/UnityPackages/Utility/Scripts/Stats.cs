@@ -1,9 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Stats : MonoBehaviour {
+    public Text text;
     public bool disabled = false;
+    public Color color = Color.blue;
+    public int fontSize = 24;
 
     private float lastUpdateShowTime = 0f;
     private readonly float updateTime = 1f;
@@ -18,8 +22,8 @@ public class Stats : MonoBehaviour {
     void Start()
     {
         bb.normal.background = null;
-        bb.normal.textColor = new Color(1.0f, 0.5f, 0.0f);
-        bb.fontSize = 24;
+        bb.normal.textColor = color;
+        bb.fontSize = fontSize;
         lastUpdateShowTime = Time.realtimeSinceStartup;
     }
 
@@ -40,9 +44,10 @@ public class Stats : MonoBehaviour {
     void OnGUI()
     {
         if (!disabled) {
-            GUILayout.Label(tris.ToString("tris #,##0"), bb);
-            GUILayout.Label(verts.ToString("verts #,##0"), bb);
-            GUILayout.Label(FPS.ToString("FPS 0.0"), bb);
+            //GUILayout.Label(tris.ToString("tris #,##0"), bb);
+            //GUILayout.Label(verts.ToString("verts #,##0"), bb);
+            //GUILayout.Label(FPS.ToString("FPS 0.0"), bb);
+            GUILayout.Label(tris.ToString("tris #,##0\n") + verts.ToString("verts #,##0\n") + FPS.ToString("FPS 0.0"), bb);
         }
     }
 
@@ -55,7 +60,11 @@ public class Stats : MonoBehaviour {
             frames = 0;
             lastUpdateShowTime = Time.realtimeSinceStartup;
             if (!disabled)
+            {
                 MeshStats();
+                if(text)
+                    text.text = tris.ToString("tris #,##0\n") + verts.ToString("verts #,##0\n") + FPS.ToString("FPS 0.0");
+            }
         }
     }
 }

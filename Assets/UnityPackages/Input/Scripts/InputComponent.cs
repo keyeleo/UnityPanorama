@@ -7,7 +7,7 @@ using Ximmerse.RhinoX;
 //Pointer input component
 public class InputComponent : MonoBehaviour
 {
-	public Text text;
+	public static InputComponent Instance;
 
 	public float CheckInterval = 0.1f;
 	public float CheckDistance = 180f;
@@ -17,11 +17,6 @@ public class InputComponent : MonoBehaviour
 	public Camera workCamera;
 	public EventSystem eventSystem;
 	public GraphicRaycaster graphicRaycaster;
-
-#if UNITY_ANDROID
-	public RXController lController;
-	public RXController rController;
-#endif
 
 	float clickTime1;
 	float clickTime2;
@@ -37,7 +32,13 @@ public class InputComponent : MonoBehaviour
     PointerEventData eventData;
 	List<RaycastResult> guiObjectList;
 
+	static List<IBaseInput> inputs = new List<IBaseInput>();
 	InputHandler handler;
+
+	public void Awake()
+	{
+		Instance = this;
+	}
 
 	public void Start()
 	{
@@ -84,28 +85,13 @@ public class InputComponent : MonoBehaviour
     [System.Obsolete]
     void Update()
 	{
-#if UNITY_ANDROID && !UNITY_EDITOR
-        if(RXInput.IsButtonUp(RhinoXButton.ControllerTouchPadButton, ControllerIndex.Controller_Right_Controller)){
-			Vector2 padPointer = Vector2.zero;
-			if (RXInput.GetTouchPadPointer(ref padPointer))
-			{
-				eventData.scrollDelta = padPointer;
-				text.text = "touch " + eventData.scrollDelta.ToString("F3");
-			}
-		}
-#endif
-
 		checkTime += Time.deltaTime;
 		if (checkTime > CheckInterval)
 		{
 			GameObject target = null;
 			if (HoverEnabled)
 			{
-#if UNITY_ANDROID && !UNITY_EDITOR
-				if (rController && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
-#else
-				if (RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
-#endif
+                if (Raycast(ref hit))
 				{
 					target = hit.collider.gameObject;
 					eventData.worldPosition = hit.point;
@@ -114,36 +100,21 @@ public class InputComponent : MonoBehaviour
 				}
 			}
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-			if (rController && RXInput.IsButtonDown(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+			Vector3 upPosition = Vector3.zero;
+			if (PointerDown(ref downPosition))
 			{
-				downPosition = rController.RaycastOrigin.position;
-				if (!target && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
+				if (!target && Raycast(ref hit))
 				{
-#else
-			if (Input.GetMouseButtonDown(0))
-			{
-				downPosition = Input.mousePosition;
-				if (!target && RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
-				{
-#endif
 					target = hit.collider.gameObject;
 				}
 			}
-#if UNITY_ANDROID && !UNITY_EDITOR
-			else if (rController && RXInput.IsButtonUp(RhinoXButton.ControllerTrigger, index: ControllerIndex.Controller_Right_Controller))
+			else if (PointerUp(ref upPosition))
 			{
-				float distance = Vector3.Distance(rController.RaycastOrigin.position, downPosition);
-				if (!target && RayCastGameObject(new Ray(rController.RaycastOrigin.position, rController.RaycastOrigin.forward), ref hit))
-#else
-			else if (Input.GetMouseButtonUp(0))
-			{
-				float distance = Vector3.Distance(Input.mousePosition, downPosition);
-				if (!target && RayCastGameObject(workCamera.ScreenPointToRay(Input.mousePosition), ref hit))
-#endif
+				float distance = Vector3.Distance(upPosition, downPosition);
+				if (!target && Raycast(ref hit))
 					target = hit.collider.gameObject;
 
-				if (target && distance<0.1f)
+				if (target && distance < 0.1f)
 				{
 					eventData.worldPosition = hit.point;
 					handler.OnPointerClick(target, eventData);
@@ -152,19 +123,42 @@ public class InputComponent : MonoBehaviour
 		}
 	}
 
-	bool RayCastGameObject(Ray ray, ref RaycastHit hit)
+	bool Raycast(ref RaycastHit hit)
 	{
 		//skip GUI RaycastObjects
 		if (!CheckGuiRaycastObjects())
 		{
 			//ray Raycast 3D Objects
-			if (Physics.Raycast(ray, out hit, CheckDistance))
+			foreach(var input in inputs)
+            {
+				if (input.Raycast(ref hit, CheckDistance))
+					return true;
+            }
+		}
+		return false;
+	}
+
+	bool PointerDown(ref Vector3 position, int button = 0)
+	{
+		foreach (var input in inputs)
+		{
+			if (input.PointerDown(ref position, button))
 				return true;
 		}
 		return false;
 	}
 
-    bool CheckGuiRaycastObjects(){
+	bool PointerUp(ref Vector3 position, int button = 0)
+	{
+		foreach (var input in inputs)
+		{
+			if (input.PointerUp(ref position, button))
+				return true;
+		}
+		return false;
+	}
+
+	bool CheckGuiRaycastObjects(){
 		if (graphicRaycaster)
 		{
 			eventData.pressPosition = Input.mousePosition;
@@ -264,4 +258,20 @@ public class InputComponent : MonoBehaviour
 			Debug.Log("drag stop");
 		}
 	}
+
+	public static void RegisterInput(IBaseInput input)
+	{
+		inputs.Add(input);
+	}
+
+}
+
+public interface IBaseInput
+{
+	bool Raycast(ref RaycastHit hit, float maxDistance = 200);
+	bool PointerDown(ref Vector3 position, int button = 0);
+	bool PointerUp(ref Vector3 position, int button = 0);
+	bool ButtonDown(int button = 0);
+	bool ButtonUp(int button = 0);
+	bool PadPointer(ref Vector2 position);
 }
