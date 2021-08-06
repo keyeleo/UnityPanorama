@@ -12,7 +12,9 @@ public class RhinoXInput : MonoBehaviour, IBaseInput
 
 	public void Awake()
 	{
+#if !UNITY_EDITOR
 		InputComponent.RegisterInput(this);
+#endif
 	}
 
 	public bool Raycast(ref RaycastHit hit, float maxDistance)
