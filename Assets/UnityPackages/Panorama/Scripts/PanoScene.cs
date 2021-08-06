@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Panoramas
 {
@@ -29,6 +30,7 @@ namespace Panoramas
 		Panorama panorama;
 		Location[] locations;
 		GameObject cursorObject;
+		string currentLocationId;
 
 		void Awake()
 		{
@@ -131,6 +133,11 @@ namespace Panoramas
 
 		public IEnumerator MoveTo(string locationid, bool teleport = false)
 		{
+			if (currentLocationId == locationid)
+            {
+				yield break;
+			}
+
 			for (int i = 0; i < locations.Length; ++i)
 			{
 				Location location = locations[i];
@@ -139,6 +146,7 @@ namespace Panoramas
 					float time = Mathf.Min(0.6f, Vector3.Distance(location.viewpoint, transform.position) / speed);
 					if (time > 0.001f)
 					{
+						currentLocationId = locationid;
 						//Debug.Log("move to " + i + ", " + location.locationid);
 						Texture[] textures = new Texture[6];
 						Texture texture = null;
